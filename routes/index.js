@@ -46,6 +46,26 @@ router.post('/authenticate', function(req, res) {
 });
 
 // route middleware to verify a token
+router.use(function(req, res, next) {
+    // check if user has a token
+    var token = req.body.token || req.query.token || req.headers['x-access-token'];
+
+
+    jwt.verify(token, secret, function(err, decoded) {
+
+        if (err) {
+
+        	res.json({msg : 'user not allowed'});
+
+        } else {
+            req.decoded = decoded;
+            console.log(decoded);
+            next();
+        }
+
+    });
+
+});
 
 router.get('/', function(req, res) {
     res.json({
@@ -53,5 +73,6 @@ router.get('/', function(req, res) {
         user: req.decoded
     });
 });
+
 
 module.exports = router;
